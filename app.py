@@ -59,7 +59,7 @@ class AppFlask(Flask):
         super().run(*args, **kwargs)
 
 
-settings = Settings(DATABASE_URL="postgresql://admin:admin@localhost:5434/po_db")
+settings = Settings(DATABASE_URL="postgresql://admin:admin@localhost:5434/to_do_db")
 
 app = AppFlask(__name__, settings=settings)
 task_repo = TaskRepository(app._session)
