@@ -9,8 +9,11 @@ class UserService:
         user = User(username=username, role=role)
         return self.repository.create_user_db(user)
 
-    def get_user(self, user_id):
-        return self.repository.get_user_by_id(user_id)
+    def get_user(self, user_id) -> User:
+        user = self.repository.get_user_by_id(user_id)
+        if not user:
+            raise ValueError(f"User with id={user_id} does not exist.")
+        return user
 
     def update_user(self, user_id, updated_user: User):
         user = self.repository.get_user_by_id(user_id)

@@ -23,7 +23,7 @@ class TaskService:
 
         return self.repository.get_all_tasks_db(user_id)
 
-    def get_task_by_id(self, task_id):
+    def get_task_by_id(self, task_id) -> Task:
         task = self.repository.get_task_by_id_db(task_id)
         if not task:
             raise ValueError(f"Task with id={task_id} does not exist.")
@@ -37,7 +37,7 @@ class TaskService:
         updated_task.task_id = task_id
         return self.repository.update_user_db(updated_task)
 
-    def delete_task(self, task_id, user_id) -> bool:
+    def delete_task(self, task_id, user_id):
         if not self._check_user_exists(user_id):
             raise ValueError(f"User with id={user_id} does not exist.")
 
