@@ -5,9 +5,12 @@ class UserService:
     def __init__(self, repository) -> None:
         self.repository = repository
 
-    def create_user(self, username, role, created_at):
-        user = User(username=username, role=role, created_at=created_at)
+    def create_user(self, username, role):
+        user = User(username=username, role=role)
         return self.repository.create_user_db(user)
+
+    def get_user(self, user_id):
+        return self.repository.get_user_by_id(user_id)
 
     def update_user(self, user_id, updated_user: User):
         user = self.repository.get_user_by_id(user_id)
