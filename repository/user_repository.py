@@ -10,12 +10,12 @@ class UserRepository:
         self.session.commit()
         return user
 
-    def update_user_db(self, user: User) -> None:
+    def update_user_db(self, user: User):
         user = self.session.merge(user)
         self.session.commit()
         return self.session.commit()
 
-    def get_user_by_id_db(self, user_id: int) -> None:
+    def get_user_by_id_db(self, user_id: int):
         return self.session.query(User).filter_by(id=user_id).first()
 
     def delete_user_db(self, user: User) -> None:

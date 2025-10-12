@@ -17,8 +17,9 @@ class TaskRepository:
         return self.session.query(Task).filter_by(task_id=task_id, user_id=user_id).first()
 
     def update_task_db(self, task: Task):
-        self.session.query(Task).filter_by(task_id=task.task_id, user_id=task.user_id).update({"status": task.status})
+        task = self.session.merge(task)
         self.session.commit()
+        return self.session.commit()
 
     def delete_task_db(self, task) -> None:
         self.session.delete(task)
