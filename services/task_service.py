@@ -10,11 +10,11 @@ class TaskService:
         user = self.user_repo.get_user_by_id_db(user_id)
         return user is not None
 
-    def create_task(self, name, user_id, due_date=None, priority="medium"):
+    def create_task(self, name, user_id, due_date, status="pending", priority="medium"):
         if not self._check_user_exists(user_id):
             raise ValueError(f"User with id={user_id} does not exist.")
 
-        task = Task(task_name=name, user_id=user_id, due_date=due_date, priority=priority)
+        task = Task(task_name=name, user_id=user_id, status=status, due_date=due_date, priority=priority)
         return self.repository.create_task_db(task)
 
     def get_tasks_for_user(self, user_id):
@@ -22,6 +22,12 @@ class TaskService:
             raise ValueError(f"User with id={user_id} does not exist.")
 
         return self.repository.get_all_tasks_db(user_id)
+
+    def get_task_by_id(self, task_id):
+        task = self.repository.get_task_by_id_db(task_id)
+        if not task:
+            raise ValueError(f"Task with id={task_id} does not exist.")
+        return task
 
     def update_task(self, task_id, updated_task: Task):
         task = self.repository.get_task_by_id_db(task_id)

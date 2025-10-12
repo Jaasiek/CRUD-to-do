@@ -59,7 +59,6 @@ class AppFlask(Flask):
         super().run(*args, **kwargs)
 
 
-
 settings = Settings(DATABASE_URL="postgresql://admin:admin@localhost:5434/po_db")
 
 app = AppFlask(__name__, settings=settings)
@@ -76,7 +75,6 @@ def create_user():
         username=data['username'],
         role=data['role'],
     )
-
     return jsonify({"user_id": user.id, "success": True}), 201
 
 
@@ -89,6 +87,7 @@ def update_user(user_id):
             user.username = data["username"]
         if user.role != data["role"]:
             user.role = data["role"]
+        user_service.update_user(user_id, user)
         return jsonify({"success": True}), 202
     except ValueError as error:
         return jsonify({"error": error, "success": False}), 404
@@ -102,6 +101,64 @@ def delete_user(user_id):
     except ValueError as error:
         return jsonify({"error": error, "success": False}), 404
 
+
+@app.post("/tasks")
+def create_task():
+    data = request.get_json()
+    try:
+        task = task_service.create_task(
+            name=data["task_name"],
+            user_id=data["user_id"],
+            status=data.get("status", "pending"),
+            due_date=data["due_date"],
+            priority=data.get("priority", "medium"),
+        )
+        return jsonify({"task_id": task.task_id, "task_name": task.task_name, "success": True}), 201
+    except ValueError as error:
+        return jsonify({"error": error, "success": False}), 400
+
+
+@app.get("/tasks/<int:user_id>")
+def get_all_tasks(user_id):
+    try:
+        tasks = task_service.get_tasks_for_user(user_id=user_id)
+        for task in tasks:
+            return jsonify({"task_id": task.task_id, "task_name": task.task_name, "task_status": task.status})
+        return jsonify({"success": True}), 200
+    except ValueError as error:
+        return jsonify({"error": error, "success": False}), 400
+
+
+@app.patch("/tasks/<int:task_id>")
+def update_task(task_id):
+    data = request.get_json()
+    try:
+        task = task_service.get_task_by_id(task_id)
+        if task.task_name != data["task_name"]:
+            task.task_name = data["task_name"]
+        if task.user_id != data["user_id"]:
+            task.user_id = data["user_id"]
+        if task.status != data["status"]:
+            task.status = data["status"]
+        if task.due_date != data["due_date"]:
+            task.due_date = data["due_date"]
+        if task.priority != data["priority"]:
+            task.priority = data["priority"]
+
+        task_service.update_task(task_id, task)
+        return jsonify({"success": True}), 202
+    except ValueError as error:
+        return jsonify({"error": error, "success": False}), 404
+
+
+@app.delete("/tasks/<int:task_id>")
+def delete_task(task_id):
+    user_id = request.args.get("user_id", type=int)
+    try:
+        task_service.delete_task(task_id, user_id)
+        return jsonify({"success": True}), 202
+    except ValueError as error:
+        return jsonify({"error": error, "success": False}), 400
 
 
 if __name__ == "__main__":
