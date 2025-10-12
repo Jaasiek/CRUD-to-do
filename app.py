@@ -7,6 +7,8 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from models import Base
 from services.task_service import TaskService
 from repository.task_repository import TaskRepository
+from repository.user_repository import UserRepository
+from services.user_service import UserService
 
 
 @dataclass
@@ -60,8 +62,10 @@ class AppFlask(Flask):
 settings = Settings(DATABASE_URL="postgresql://admin:admin@localhost:5434/po_db")
 
 app = AppFlask(__name__, settings=settings)
-repo = TaskRepository(app._session)
-service = TaskService(repo)
+task_repo = TaskRepository(app._session)
+user_repo = UserRepository(app._session)
+task_service = TaskService(task_repo, user_repo)
+user_service = UserService(user_repo)
 
 
 if __name__ == "__main__":
