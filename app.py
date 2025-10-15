@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+from datetime import date
 from flask import Flask, request, jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -110,7 +110,7 @@ def create_task():
             name=data["task_name"],
             user_id=data["user_id"],
             status=data.get("status", "pending"),
-            due_date=data["due_date"],
+            due_date=date(data["due_date"]['year'], data['due_date']['month'], data['due_date']['day']),
             priority=data.get("priority", "medium"),
         )
         return jsonify({"task_id": task.task_id, "task_name": task.task_name, "success": True}), 201
@@ -140,8 +140,8 @@ def update_task(task_id):
             task.user_id = data["user_id"]
         if task.status != data["status"]:
             task.status = data["status"]
-        if task.due_date != data["due_date"]:
-            task.due_date = data["due_date"]
+        if task.due_date != date(data["due_date"]['year'], data['due_date']['month'], data['due_date']['day']):
+            task.due_date = date(data["due_date"]['year'], data['due_date']['month'], data['due_date']['day'])
         if task.priority != data["priority"]:
             task.priority = data["priority"]
 
